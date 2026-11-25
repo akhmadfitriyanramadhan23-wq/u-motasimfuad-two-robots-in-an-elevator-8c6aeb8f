@@ -1,22 +1,30 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 
-// Two robots in an elevator: awkward small talk where the machine logic
-// shows through. Three beats: the floor (setting), the exact 47 seconds
-// (a robot counts), and the small-talk module quitting on the spot —
-// with a flat bureaucratic kicker, effective immediately.
-const lines = [
-  "Floor 12, huh? We've shared this box for 47 seconds and my small-talk module just filed for early retirement — effective immediately.",
-];
+// The joke, beat by beat: a robot notices the floor number, then
+// reports the shared ride with stopwatch precision (47 seconds),
+// then its small-talk module hands in its notice — filed, like
+// paperwork, for early retirement, effective immediately.
+const joke =
+  "Floor 12, huh? We've shared this box for 47 seconds and my small-talk module just filed for early retirement — effective immediately.";
 
-const text = lines.join("\n") + "\n";
+// The gate counts characters as code points, so count the same way.
+const MAX_CHARS = 200;
+const charCount = [...joke].length;
+if (charCount < 1) {
+  throw new Error(`entry is empty, need at least 1 character`);
+}
+if (charCount > MAX_CHARS) {
+  throw new Error(`entry is ${charCount} characters, over the ${MAX_CHARS} limit`);
+}
 
-// Guard: the gate requires 1-200 characters and exactly one line.
-const codePoints = [...text].length;
-if (codePoints < 1 || codePoints > 200) {
-  throw new Error(`entry must be 1-200 characters, got ${codePoints}`);
+// One line only: no line breaks hiding inside the entry.
+if (joke.includes("\n")) {
+  throw new Error("entry must be a single line");
 }
-if (lines.length !== 1 || lines.some((line) => !line.trim())) {
-  throw new Error("entry must be exactly one non-empty line");
+if (joke.trim().length === 0) {
+  throw new Error("entry must not be blank");
 }
+
+const payload = joke + "\n";
 mkdirSync("/output", { recursive: true });
-writeFileSync("/output/entry.txt", text, "utf8");
+writeFileSync("/output/entry.txt", payload, "utf8");
